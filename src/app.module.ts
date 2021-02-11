@@ -29,6 +29,7 @@ import { User } from './users/entities/users.entity';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        SECRET_KEY: Joi.string().required(), // token을 지정하기 위해 사용하는 privateKey
       }),
     }),
     TypeOrmModule.forRoot({
