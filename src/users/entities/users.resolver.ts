@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 import {
   CreatedAccountOutput,
   CreateAccountInput,
-} from '../dto/create-account.dto';
+} from '../dtos/create-account.dto';
 
 @Resolver((of) => User)
 export class UsersResolver {
@@ -39,4 +39,6 @@ export class UsersResolver {
       };
     }
   }
+
+  @Mutation(returns => )
 }
