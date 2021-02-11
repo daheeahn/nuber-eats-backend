@@ -8,7 +8,6 @@ type Restaurant {
   isVegan: Boolean!
   address: String!
   ownerName: String!
-  categoryName: String!
 }
 
 type Query {

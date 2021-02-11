@@ -38,7 +38,7 @@ import { Restaurant } from './restaurants/entities/restaurant.entity';
       // true: 데이터베이스를 내 모듈의 현재 상태로 마이그레이션한다는 뜻
       // TypeORM이 Entity를 찾고 알아서 migration 해주는 것이다. DB의 구성을 자동으로 바꿔준다.
       synchronize: process.env.NODE_ENV !== 'prod', // prod은 따로 하고 싶을 수 있으니까
-      logging: true, // 데이터베이스에서 무슨 일이 일어나는지 콘솔에 표시
+      logging: process.env.NODE_ENV !== 'prod', // 데이터베이스에서 무슨 일이 일어나는지 콘솔에 표시
       entities: [Restaurant],
     }),
     GraphQLModule.forRoot({
