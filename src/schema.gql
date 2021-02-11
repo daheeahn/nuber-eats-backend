@@ -2,6 +2,21 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type CreatedAccountOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Query {
   hi: Boolean!
+}
+
+type Mutation {
+  createAccount(input: CreateAccountInput!): CreatedAccountOutput!
+}
+
+input CreateAccountInput {
+  email: String!
+  password: String!
+  role: String!
 }
