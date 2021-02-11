@@ -22,8 +22,8 @@ export class RestaurantResolver {
 
   @Mutation((returns) => Boolean)
   async createRestaurant(
-    // @Args('createRestaurantInput') createRestaurantInput: CreateRestaurantDto, // InputType 사용 시
-    @Args() createRestaurantDto: CreateRestaurantDto, // ArgsType 사용 시 (이러면 자동으로 각자 분리된다.)
+    @Args('input') createRestaurantDto: CreateRestaurantDto, // InputType 사용 시
+    // @Args() createRestaurantDto: CreateRestaurantDto, // ArgsType 사용 시 (이러면 자동으로 각자 분리된다.)
   ): Promise<boolean> {
     console.log('createRestaurantDto', createRestaurantDto);
     try {
