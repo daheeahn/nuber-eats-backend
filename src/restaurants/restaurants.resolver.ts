@@ -2,6 +2,7 @@ import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { Restaurant } from './entities/restaurant.entity';
 import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
 import { RestaurantService } from './restaurant.service';
+import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
 // import { Query } from '@nestjs/common'; // 이거 아님!!!!!!!!!!!!1
 
 @Resolver((of) => Restaurant) // 꼭 이렇게 안해도 됨. 그냥 이름 붙여주는거. 직관성 높아짐.
@@ -30,7 +31,18 @@ export class RestaurantResolver {
       await this.restaurantService.createRestaurant(createRestaurantDto);
       return true;
     } catch (e) {
-      console.log('e', e);
+      console.log('create e', e);
+      return false;
+    }
+  }
+
+  @Mutation((returns) => Boolean)
+  async updateRestaurant(@Args() input: UpdateRestaurantDto): Promise<boolean> {
+    try {
+      await this.restaurantService.updateRestaurant(input);
+      return true;
+    } catch (e) {
+      console.log('update e', e);
       return false;
     }
   }
