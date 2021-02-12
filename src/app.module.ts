@@ -12,6 +12,7 @@ import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/users.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 // console.log(Joi); // 그냥 import Joi하면 undefined가 찍힘
 
@@ -50,6 +51,7 @@ import { User } from './users/entities/users.entity';
     }),
     UsersModule,
     CommonModule,
+    JwtModule,
   ],
   controllers: [],
   providers: [],
