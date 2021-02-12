@@ -2,7 +2,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './users.entity';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';
 import {
   CreateAccountInput,
   CreatedAccountOutput,
@@ -72,7 +71,7 @@ export class UsersService {
         };
       }
       // make a JWT and give it to the user
-      const token = jwt.sign({ id: user.id }, this.config.get('PRIVATE_KEY'));
+      const token = this.jwtService.sign(user.id);
       return {
         ok: true,
         token,

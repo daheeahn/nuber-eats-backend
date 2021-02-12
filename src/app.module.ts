@@ -50,7 +50,7 @@ import { JwtModule } from './jwt/jwt.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
     JwtModule.forRoot({
-      privateKey: process.env.PRIVATE_KEY,
+      privateKey: process.env.PRIVATE_KEY, // JwtService에서 그냥 this.config 해도 되긴함. 이런 방법도 있다~
     }),
     UsersModule,
     CommonModule,
