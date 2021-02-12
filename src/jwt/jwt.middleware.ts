@@ -16,13 +16,13 @@ export class JwtMiddleware implements NestMiddleware {
     // console.log('headers ', req.headers);
     if ('x-jwt' in req.headers) {
       const token = req.headers['x-jwt'];
-      console.log('Token: ', token);
+      // console.log('Token: ', token);
       const decoded = this.jwtService.verify(token.toString()); // token을 확실히 string으로 확신할 수 있도록.
       if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
-        console.log(decoded['id']);
+        // console.log(decoded['id']);
         try {
           const user = await this.usersService.findById(decoded['id']);
-          console.log('user', user); // cool!
+          // console.log('user', user); // cool!
           // user를 이제 request로 보낼거야!
           req['user'] = user;
         } catch (error) {
