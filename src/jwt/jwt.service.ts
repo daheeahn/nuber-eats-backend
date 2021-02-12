@@ -14,4 +14,8 @@ export class JwtService {
   sign(userId: number): string {
     return jwt.sign({ id: userId }, this.options.privateKey); // ConfigService 가져와서 this.config 해도 되긴함. 이런 방법도 있다~
   }
+  verify(token: string) {
+    //
+    return jwt.verify(token, this.options.privateKey);
+  }
 }

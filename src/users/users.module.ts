@@ -10,5 +10,6 @@ import { UsersService } from './entities/users.service';
   // 그러면 UserService에서 config를 constructor에서 불러올 수 있음.
   imports: [TypeOrmModule.forFeature([User])], // ConfigService, JwtService는 global이라 import 안해줘도 됨
   providers: [UsersResolver, UsersService],
+  exports: [UsersService], // 이걸 안하면 jwt service에서 usersService 사용할 수 없음. export를 안하니까!
 })
 export class UsersModule {}
