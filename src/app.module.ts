@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,6 +18,8 @@ import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/users.entity';
 import { JwtModule } from './jwt/jwt.module';
+import { jwtMiddleware } from './jwt/jwt.middleware';
+import { pathToArray } from 'graphql/jsutils/Path';
 
 // console.log(Joi); // 그냥 import Joi하면 undefined가 찍힘
 
@@ -58,4 +65,18 @@ import { JwtModule } from './jwt/jwt.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+// export class AppModule {}
+export class AppModule implements NestModule {
+  // *** 특정 옵션 넣고 싶을 떄
+  configure(consumer: MiddlewareConsumer) {
+    // jwtMiddleware처럼 그냥 function으로 써도 되고, JwtMiddleware class로 써도되고~
+    consumer.apply(jwtMiddleware).forRoutes({
+      // path에 해당하고, post만 JwtMiddleware가 먹히도록 설정.
+      // path: '/graphql',
+      // method: RequestMethod.POST,
+      path: '*',
+      method: RequestMethod.ALL,
+    });
+    // *팁) .exclude 함수만 바꿔주면 모든 그 안 옵션에 있는 pathToArray, method는 제외시켜준다.
+  }
+}
