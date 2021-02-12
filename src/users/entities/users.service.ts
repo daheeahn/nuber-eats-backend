@@ -9,14 +9,17 @@ import {
 } from '../dtos/create-account.dto';
 import { LoginInput, LoginOutput } from '../dtos/login.dto';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from 'src/jwt/jwt.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly config: ConfigService,
+    private readonly jwtService: JwtService, // class 타입만 보고 imports에서 알아서 찾아준다.
   ) {
     // console.log(this.config.get('SECRET_KEY')); // works!
+    // console.log('jwt service in users.service', jwtService.hello()); // works!
   }
 
   async createAccount({
