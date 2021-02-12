@@ -18,7 +18,7 @@ export class UsersService {
     private readonly config: ConfigService,
     private readonly jwtService: JwtService, // class 타입만 보고 imports에서 알아서 찾아준다.
   ) {
-    // console.log(this.config.get('SECRET_KEY')); // works!
+    // console.log(this.config.get('PRIVATE_KEY')); // works!
     // console.log('jwt service in users.service', jwtService.hello()); // works!
   }
 
@@ -72,7 +72,7 @@ export class UsersService {
         };
       }
       // make a JWT and give it to the user
-      const token = jwt.sign({ id: user.id }, this.config.get('SECRET_KEY'));
+      const token = jwt.sign({ id: user.id }, this.config.get('PRIVATE_KEY'));
       return {
         ok: true,
         token,
