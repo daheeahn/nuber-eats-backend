@@ -20,6 +20,7 @@ import { User } from './users/entities/users.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { jwtMiddleware, JwtMiddleware } from './jwt/jwt.middleware';
 import { pathToArray } from 'graphql/jsutils/Path';
+import { AuthModule } from './auth/auth.module';
 
 // console.log(Joi); // 그냥 import Joi하면 undefined가 찍힘
 
@@ -61,7 +62,8 @@ import { pathToArray } from 'graphql/jsutils/Path';
       privateKey: process.env.PRIVATE_KEY, // JwtService에서 그냥 this.config 해도 되긴함. 이런 방법도 있다~
     }),
     UsersModule,
-    CommonModule,
+    // CommonModule,
+    // AuthModule,
   ],
   controllers: [],
   providers: [],

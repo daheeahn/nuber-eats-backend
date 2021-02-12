@@ -6,6 +6,8 @@ import {
   CreateAccountInput,
 } from '../dtos/create-account.dto';
 import { LoginOutput, LoginInput } from '../dtos/login.dto';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Resolver((of) => User)
 export class UsersResolver {
@@ -43,14 +45,6 @@ export class UsersResolver {
   }
 
   @Query((returns) => User)
-  me(@Context() context): User {
-    // console.log(context);
-
-    // this is not good!!!!!
-    if (!context.user) {
-      return;
-    } else {
-      return context.user;
-    }
-  }
+  @UseGuards(AuthGuard) // 이렇게 추가해주는 것보다 더 좋은 방법 있다. (추후에 다시~!)
+  me(@Context() context) {}
 }
