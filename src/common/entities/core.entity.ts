@@ -3,9 +3,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Field } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 
 // 모든 entity는 이걸 상속한다.
+@ObjectType()
 export class CoreEntity {
   @PrimaryGeneratedColumn()
   @Field((type) => Number)
