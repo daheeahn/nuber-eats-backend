@@ -67,7 +67,12 @@ export class UsersService {
   async login({ email, password }: LoginInput): Promise<LoginOutput> {
     try {
       // find the user with the email
-      const user = await this.users.findOne({ email });
+      const user = await this.users.findOne(
+        { email },
+        // password는 기본적으로 select: false로 설정해뒀기 때문에 findOne에서 이거없이는 불러와지지 않는다.
+        // id는 왜? => findOne 메소드의 options 파라미터 hash의 select값 자체가 배열에 명시된 필드들만 반환하도록 설계되어 있기때문입니다.
+        { select: ['id', 'password'] },
+      );
       if (!user) {
         return {
           ok: false,
@@ -141,10 +146,11 @@ export class UsersService {
     );
     if (verification) {
       // .user = undefined. 자동으로 불러와져서 relations: ['user']를 해줘야 함
-      console.log('verification', verification);
+      // console.log('verification', verification);
       verification.user.verified = true;
-      this.users.save(verification.user); // 패스워드 또 해시화됨. 에러!!!! 다음 강의에서 고침.
+      await this.users.save(verification.user); // 패스워드 또 해시화됨. 에러!!!! 다음 강의에서 고침.
+      return true;
     }
-    return false;
+    throw new Error();
   }
 }

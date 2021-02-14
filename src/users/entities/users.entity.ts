@@ -26,7 +26,10 @@ export class User extends CoreEntity {
   @IsEmail()
   email: string;
 
-  @Column()
+  // 쿼리 실행마다 이 column은 포함하지 X.
+  // 이렇게 해야 this.users.save(user)할 때 password가 user에 없고,
+  // BeforeUpdate할 때 password가 없기 때문에 if (this.password) 조건에 맞지도 않음. 굳.
+  @Column({ select: false })
   @Field((type) => String)
   password: string;
 
@@ -45,12 +48,15 @@ export class User extends CoreEntity {
     // this.users.save 전에 create했을 때 이미 우리는 instance를 가지고 있다. (이 때 생성된다.)
     // create는 단지 entity를 만들 뿐이야. 이 entity를 save하기 전에 hashPassword가 실행되는거고. BeforeInsert
     // this.password에 접근할 수 있다. 그래서 해시!
-    try {
-      // throw new Error('oppp'); // for test
-      this.password = await bcrypt.hash(this.password, 10);
-    } catch (error) {
-      console.log('hash password', error);
-      throw new InternalServerErrorException();
+
+    // password가 있을 때만 해시한다. (verifyEmail에선 해시하면 안되기때문.)
+    if (this.password) {
+      try {
+        this.password = await bcrypt.hash(this.password, 10);
+      } catch (error) {
+        console.log('hash password', error);
+        throw new InternalServerErrorException();
+      }
     }
   }
 
