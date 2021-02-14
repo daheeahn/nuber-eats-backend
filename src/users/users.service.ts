@@ -133,4 +133,18 @@ export class UsersService {
     // 이제 BeforeUpdate가 먹힌다~ entity를 직.접. 업데이트해줘야 한다.
     return this.users.save(user);
   }
+
+  async verifyEmail(code: string): Promise<boolean> {
+    const verification = await this.verifications.findOne(
+      { code },
+      { relations: ['user'] }, // 이거 없으면 user 정보는 없다. 이렇게 직접 불러와줘야 한다.
+    );
+    if (verification) {
+      // .user = undefined. 자동으로 불러와져서 relations: ['user']를 해줘야 함
+      console.log('verification', verification);
+      verification.user.verified = true;
+      this.users.save(verification.user); // 패스워드 또 해시화됨. 에러!!!! 다음 강의에서 고침.
+    }
+    return false;
+  }
 }
