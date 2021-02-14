@@ -1,4 +1,4 @@
-import { Entity, Column, BeforeInsert } from 'typeorm';
+import { Entity, Column, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import {
   ObjectType,
@@ -36,6 +36,7 @@ export class User extends CoreEntity {
   role: UserRole;
 
   @BeforeInsert()
+  @BeforeUpdate() // update할 때도~! // 우리가 직접 entity update하는게 아니다. 그냥 db에 쿼리만 보내는 것이다. 그래서 BeforeUpdate는 특정 entity를 업데이트해야 한다. .update는 그냥 그 entity가 있길 바라면서 쿼리만 보내는거야. => save해야해
   async hashPassword(): Promise<void> {
     // this.users.save 전에 create했을 때 이미 우리는 instance를 가지고 있다. (이 때 생성된다.)
     // create는 단지 entity를 만들 뿐이야. 이 entity를 save하기 전에 hashPassword가 실행되는거고. BeforeInsert
