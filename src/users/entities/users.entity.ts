@@ -35,6 +35,10 @@ export class User extends CoreEntity {
   @IsEnum(UserRole)
   role: UserRole;
 
+  @Column({ default: false })
+  @Field((type) => Boolean)
+  verified: boolean; // email이 인증됐는지 안됐는지
+
   @BeforeInsert()
   @BeforeUpdate() // update할 때도~! // 우리가 직접 entity update하는게 아니다. 그냥 db에 쿼리만 보내는 것이다. 그래서 BeforeUpdate는 특정 entity를 업데이트해야 한다. .update는 그냥 그 entity가 있길 바라면서 쿼리만 보내는거야. => save해야해
   async hashPassword(): Promise<void> {
