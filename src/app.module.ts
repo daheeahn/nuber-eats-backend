@@ -22,6 +22,7 @@ import { jwtMiddleware, JwtMiddleware } from './jwt/jwt.middleware';
 import { pathToArray } from 'graphql/jsutils/Path';
 import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
+import { MailModule } from './mail/mail.module';
 
 // console.log(Joi); // 그냥 import Joi하면 undefined가 찍힘
 
@@ -40,6 +41,9 @@ import { Verification } from './users/entities/verification.entity';
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
         PRIVATE_KEY: Joi.string().required(), // token을 지정하기 위해 사용하는 privateKey
+        MAILGUN_API_KEY: Joi.string().required(),
+        MAILGUN_DOMAIL_NAME: Joi.string().required(),
+        MAILGUN_FROM_EMAIL: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -61,6 +65,11 @@ import { Verification } from './users/entities/verification.entity';
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY, // JwtService에서 그냥 this.config 해도 되긴함. 이런 방법도 있다~
+    }),
+    MailModule.forRoot({
+      apiKey: process.env.MAILGUN_API_KEY,
+      emailDomain: process.env.MAILGUN_DOMAIL_NAME,
+      fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
     UsersModule,
     // CommonModule,
