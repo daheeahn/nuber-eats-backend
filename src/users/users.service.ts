@@ -9,8 +9,9 @@ import {
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from 'src/jwt/jwt.service';
-import { EditProfileInput } from './dtos/edit-profile.dto';
+import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
+import { VerifyEmailOutput } from './dtos/verify-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -108,7 +109,7 @@ export class UsersService {
   async editProfile(
     userId: number,
     { email, password }: EditProfileInput,
-  ): Promise<User> {
+  ): Promise<EditProfileOutput> {
     // 1. user가 있는지 없는지 체크 안한다. but, 우리는 user 없으면 여기 오지 않기 때문에 괜찮다.
     // 빠르다: Executes fast and efficient UPDATE query.
     // this.users.update({ id: userId }, { email, password });
@@ -126,31 +127,50 @@ export class UsersService {
     // Saves all given entities in the database. If entities do not exist in the database then inserts, otherwise updates.
     // entity가 존재하면 update, 존재하지 않으면 insert
     // 우리가 직접 entity 업데이트하고있어.
-    const user = await this.users.findOne(userId);
-    if (email) {
-      user.email = email;
-      user.verified = false;
-      await this.verifications.save(this.verifications.create({ user }));
+    try {
+      const user = await this.users.findOne(userId);
+      if (email) {
+        user.email = email;
+        user.verified = false;
+        await this.verifications.save(this.verifications.create({ user }));
+      }
+      if (password) {
+        user.password = password;
+      }
+      // 이제 BeforeUpdate가 먹힌다~ entity를 직.접. 업데이트해줘야 한다.
+      await this.users.save(user);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
     }
-    if (password) {
-      user.password = password;
-    }
-    // 이제 BeforeUpdate가 먹힌다~ entity를 직.접. 업데이트해줘야 한다.
-    return this.users.save(user);
   }
 
-  async verifyEmail(code: string): Promise<boolean> {
-    const verification = await this.verifications.findOne(
-      { code },
-      { relations: ['user'] }, // 이거 없으면 user 정보는 없다. 이렇게 직접 불러와줘야 한다.
-    );
-    if (verification) {
-      // .user = undefined. 자동으로 불러와져서 relations: ['user']를 해줘야 함
-      // console.log('verification', verification);
-      verification.user.verified = true;
-      await this.users.save(verification.user); // 패스워드 또 해시화됨. 에러!!!! 다음 강의에서 고침.
-      return true;
+  async verifyEmail(code: string): Promise<VerifyEmailOutput> {
+    try {
+      const verification = await this.verifications.findOne(
+        { code },
+        { relations: ['user'] }, // 이거 없으면 user 정보는 없다. 이렇게 직접 불러와줘야 한다.
+      );
+      if (verification) {
+        // .user = undefined. 자동으로 불러와져서 relations: ['user']를 해줘야 함
+        // console.log('verification', verification);
+        verification.user.verified = true;
+        await this.users.save(verification.user); // 패스워드 또 해시화됨. 에러!!!! 다음 강의에서 고침.
+        return {
+          ok: true,
+        };
+      }
+      throw new Error();
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
     }
-    throw new Error();
   }
 }
