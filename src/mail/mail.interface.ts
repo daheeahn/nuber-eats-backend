@@ -1,5 +1,5 @@
 export interface MailModuleOptions {
   apiKey: string;
-  emailDomain: string;
+  domain: string;
   fromEmail: string;
 }

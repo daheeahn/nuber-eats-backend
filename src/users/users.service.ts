@@ -12,6 +12,7 @@ import { JwtService } from 'src/jwt/jwt.service';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +22,7 @@ export class UsersService {
     private readonly verifications: Repository<Verification>,
     private readonly config: ConfigService,
     private readonly jwtService: JwtService, // class 타입만 보고 imports에서 알아서 찾아준다.
+    private readonly mailService: MailService,
   ) {
     // console.log(this.config.get('PRIVATE_KEY')); // works!
     // console.log('jwt service in users.service', jwtService.hello()); // works!
@@ -44,12 +46,13 @@ export class UsersService {
       const user = await this.users.save(
         this.users.create({ email, password, role }),
       );
-      await this.verifications.save(
+      const verification = await this.verifications.save(
         this.verifications.create({
           // code: 121212, // verification BeforeInsert를 통해 만들어진다.
           user,
         }),
       );
+      this.mailService.sendVerificationEmail(verification.code);
       return {
         ok: true,
       };
@@ -132,7 +135,10 @@ export class UsersService {
       if (email) {
         user.email = email;
         user.verified = false;
-        await this.verifications.save(this.verifications.create({ user }));
+        const verification = await this.verifications.save(
+          this.verifications.create({ user }),
+        );
+        this.mailService.sendVerificationEmail(verification.code);
       }
       if (password) {
         user.password = password;
