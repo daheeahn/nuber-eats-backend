@@ -161,6 +161,7 @@ export class UsersService {
         // console.log('verification', verification);
         verification.user.verified = true;
         await this.users.save(verification.user); // 패스워드 또 해시화됨. 에러!!!! 다음 강의에서 고침.
+        await this.verifications.delete(verification.id);
         return {
           ok: true,
         };
