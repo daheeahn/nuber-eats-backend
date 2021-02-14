@@ -1,16 +1,16 @@
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
-import { User } from './users.entity';
+import { User } from './entities/users.entity';
 import { UsersService } from './users.service';
 import {
   CreatedAccountOutput,
   CreateAccountInput,
-} from '../dtos/create-account.dto';
-import { LoginOutput, LoginInput } from '../dtos/login.dto';
+} from './dtos/create-account.dto';
+import { LoginOutput, LoginInput } from './dtos/login.dto';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { AuthUser } from 'src/auth/auth-user.decorator';
-import { UserProfileInput, UserProfileOutput } from '../dtos/user-profile.dto';
-import { EditProfileOutput, EditProfileInput } from '../dtos/edit-profile.dto';
+import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
+import { EditProfileOutput, EditProfileInput } from './dtos/edit-profile.dto';
 
 @Resolver((of) => User)
 export class UsersResolver {

@@ -1,7 +1,7 @@
 import { NestMiddleware, Injectable } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { JwtService } from './jwt.service';
-import { UsersService } from 'src/users/entities/users.service';
+import { UsersService } from 'src/users/users.service';
 
 // option 1 (users repository 써야하니까 우리는 이거)
 @Injectable()

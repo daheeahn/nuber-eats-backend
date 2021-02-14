@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/users.entity';
-import { UsersResolver } from './entities/users.resolver';
-import { UsersService } from './entities/users.service';
+import { UsersResolver } from './users.resolver';
+import { UsersService } from './users.service';
 
 @Module({
   // ConfigService import했으니 users.service에서 쓸 수 있어 = 환경변수를 process.env 안하고 this.config로 쓸 수 있음 (users.service에서 확인)

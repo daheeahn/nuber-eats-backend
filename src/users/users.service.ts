@@ -1,15 +1,15 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './users.entity';
+import { User } from './entities/users.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import {
   CreateAccountInput,
   CreatedAccountOutput,
-} from '../dtos/create-account.dto';
-import { LoginInput, LoginOutput } from '../dtos/login.dto';
+} from './dtos/create-account.dto';
+import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from 'src/jwt/jwt.service';
-import { EditProfileInput } from '../dtos/edit-profile.dto';
+import { EditProfileInput } from './dtos/edit-profile.dto';
 
 @Injectable()
 export class UsersService {
