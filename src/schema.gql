@@ -74,7 +74,6 @@ type VerifyEmailOutput {
 type Query {
   hi: Boolean!
   userProfile(userId: Float!): UserProfileOutput!
-  restaurants: [Restaurant!]!
 }
 
 type Mutation {
@@ -83,7 +82,6 @@ type Mutation {
   editProfile(input: EditProfileInput!): EditProfileOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
   createRestaurant(input: CreateRestaurantDto!): Boolean!
-  updateRestaurant(id: Float!, data: UpdateRestaurantInputType!): Boolean!
 }
 
 input CreateAccountInput {
@@ -136,14 +134,4 @@ input UserInputType {
   role: UserRole!
   verified: Boolean!
   restaurants: [RestaurantInputType!]!
-}
-
-input UpdateRestaurantInputType {
-  createdAt: DateTime
-  updatedAt: DateTime
-  name: String
-  coverImg: String
-  address: String = "강남"
-  category: CategoryInputType
-  owner: UserInputType
 }
