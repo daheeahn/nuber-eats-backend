@@ -8,6 +8,11 @@ import {
 } from './dtos/create-restaurant.dto';
 import { User } from 'src/users/entities/users.entity';
 import { Category } from './entities/category.entity';
+import {
+  EditRestaurantInput,
+  EditRestaurantOutput,
+} from './dtos/edit-restaurant.dto';
+import { CategoryRepository } from './repositories/category.repository';
 
 @Injectable()
 export class RestaurantService {
@@ -15,8 +20,8 @@ export class RestaurantService {
   constructor(
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
-    @InjectRepository(Category)
-    private readonly categories: Repository<Category>,
+    // @InjectRepository(Category) // 이제 custom repository라 필요없음.
+    private readonly categories: CategoryRepository, // custom repository
   ) {
     // console.log('hello how are'.replace(/ /g, '-')); // 그냥 ' ', '-'하면 맨 처음 빈칸만 적용된다.
   }
@@ -31,16 +36,9 @@ export class RestaurantService {
     try {
       const newRestaurant = this.restaurants.create(createRestaurantInput); // js에서만 존재하고 실제 db에 저장되진 않는다.
       newRestaurant.owner = owner;
-      const categoryName = createRestaurantInput.categoryName
-        .trim()
-        .toLowerCase(); // korean bbq, korean-bbq, Korean-BBQ
-      const categorySlug = categoryName.replace(/ /g, '-');
-      let category = await this.categories.findOne({ slug: categorySlug });
-      if (!category) {
-        category = await this.categories.save(
-          this.categories.create({ slug: categorySlug, name: categoryName }),
-        );
-      }
+      const category = await this.categories.getOrCreate(
+        createRestaurantInput.categoryName,
+      );
       newRestaurant.category = category;
 
       await this.restaurants.save(newRestaurant);
@@ -48,10 +46,62 @@ export class RestaurantService {
         ok: true,
       };
     } catch (e) {
-      console.log('create e', e);
       return {
         ok: false,
         error: 'Could not create restaurant',
+      };
+    }
+  }
+
+  async editRestaurant(
+    owner: User,
+    editRestaurantInput: EditRestaurantInput,
+  ): Promise<EditRestaurantOutput> {
+    try {
+      // findOneOrFail: 못찾으면 에러를 뿜는다.
+      const restaurant = await this.restaurants.findOne(
+        editRestaurantInput.restaurantId,
+        {
+          // relations: ['owner']은 모든 object를 가져오지만 이건 id만 가져와서 더 빠르겠지!
+          // loadRelationIds: true
+          // but, ownerId를 만들었기 때문에 필요X
+        },
+      );
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: 'You cannot edit a restaurant that you donnot own',
+        };
+      }
+      // defensive programming: 확실히 이 레스토랑의 오너다!
+
+      let category: Category = null;
+      if (editRestaurantInput.categoryName) {
+        category = await this.categories.getOrCreate(
+          editRestaurantInput.categoryName,
+        );
+      }
+      await this.restaurants.save([
+        // 업데이트할 땐 array를 넣어야 한다.
+        {
+          id: editRestaurantInput.restaurantId, // id 보내지 않으면 entity를 새로 만든다.
+          ...editRestaurantInput,
+          ...(category && { category }), // category가 존재할 때만!
+        },
+      ]);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'Could not edit Restaurant',
       };
     }
   }

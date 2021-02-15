@@ -1,5 +1,11 @@
 import { ObjectType, Field, InputType } from '@nestjs/graphql';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  RelationId,
+} from 'typeorm';
 import { IsString, IsBoolean, Length, IsOptional } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Category } from './category.entity';
@@ -39,4 +45,8 @@ export class Restaurant extends CoreEntity {
     onDelete: 'CASCADE',
   })
   owner: User;
+
+  // graphql에서는 알고싶지 않아서 @Field 안씀.
+  @RelationId((restaurant: Restaurant) => restaurant.owner)
+  ownerId: number;
 }
