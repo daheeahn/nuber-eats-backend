@@ -44,6 +44,11 @@ type Restaurant {
   owner: User!
 }
 
+type CreateRestaurantOutput {
+  error: String
+  ok: Boolean!
+}
+
 type CreatedAccountOutput {
   error: String
   ok: Boolean!
@@ -81,7 +86,7 @@ type Mutation {
   login(input: LoginInput!): LoginOutput!
   editProfile(input: EditProfileInput!): EditProfileOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
-  createRestaurant(input: CreateRestaurantDto!): Boolean!
+  createRestaurant(input: CreateRestaurantInput!): CreateRestaurantOutput!
 }
 
 input CreateAccountInput {
@@ -104,19 +109,20 @@ input VerifyEmailInput {
   code: String!
 }
 
-input CreateRestaurantDto {
+input CreateRestaurantInput {
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
   coverImg: String!
   address: String = "강남"
-  category: CategoryInputType
   owner: UserInputType!
 }
 
-input CategoryInputType {
-  name: String!
-  coverImg: String!
+input UserInputType {
+  email: String!
+  password: String!
+  role: UserRole!
+  verified: Boolean!
   restaurants: [RestaurantInputType!]!
 }
 
@@ -128,10 +134,8 @@ input RestaurantInputType {
   owner: UserInputType!
 }
 
-input UserInputType {
-  email: String!
-  password: String!
-  role: UserRole!
-  verified: Boolean!
+input CategoryInputType {
+  name: String!
+  coverImg: String!
   restaurants: [RestaurantInputType!]!
 }

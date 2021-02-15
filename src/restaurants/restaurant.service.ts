@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Restaurant } from './entities/restaurant.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
+import {
+  CreateRestaurantInput,
+  CreateRestaurantOutput,
+} from './dtos/create-restaurant.dto';
+import { User } from 'src/users/entities/users.entity';
 
 @Injectable()
 export class RestaurantService {
@@ -12,13 +16,25 @@ export class RestaurantService {
     private readonly restaurants: Repository<Restaurant>,
   ) {}
 
-  createRestaurant(
-    createRestaurantDto: CreateRestaurantDto,
-  ): Promise<Restaurant> {
+  async createRestaurant(
+    owner: User,
+    createRestaurantInput: CreateRestaurantInput,
+  ): Promise<CreateRestaurantOutput> {
     // create vs save on typeorm
     // create return Entity (db 반영 X)
     // save return Promise<Entity> (db 반영 O)
-    const newRestaurant = this.restaurants.create(createRestaurantDto); // js에서만 존재하고 실제 db에 저장되진 않는다.
-    return this.restaurants.save(newRestaurant);
+    try {
+      const newRestaurant = this.restaurants.create(createRestaurantInput); // js에서만 존재하고 실제 db에 저장되진 않는다.
+      await this.restaurants.save(newRestaurant);
+      return {
+        ok: true,
+      };
+    } catch (e) {
+      console.log('create e', e);
+      return {
+        ok: false,
+        error: 'Could not create restaurant',
+      };
+    }
   }
 }
