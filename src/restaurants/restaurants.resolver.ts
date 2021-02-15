@@ -7,6 +7,9 @@ import {
 import { RestaurantService } from './restaurant.service';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { User } from 'src/users/entities/users.entity';
+import { SetMetadata } from '@nestjs/common';
+import { UserRole } from 'src/users/entities/users.entity';
+import { Role } from 'src/auth/role.decorator';
 // import { Query } from '@nestjs/common'; // 이거 아님!!!!!!!!!!!!1
 
 @Resolver((of) => Restaurant) // 꼭 이렇게 안해도 됨. 그냥 이름 붙여주는거. 직관성 높아짐.
@@ -14,6 +17,8 @@ export class RestaurantResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
 
   @Mutation((returns) => CreateRestaurantOutput)
+  @Role(['Owner'])
+  // @SetMetadata('role', [UserRole.Owner]) // 거의 모든 Q, M에 적용하고 싶다. => decorator 만들 것. Role()
   async createRestaurant(
     @AuthUser() authUser: User,
     @Args('input') createRestaurantInput: CreateRestaurantInput, // InputType 사용 시
