@@ -1,4 +1,4 @@
-import { Entity, Column, BeforeInsert, BeforeUpdate } from 'typeorm';
+import { Entity, Column, BeforeInsert, BeforeUpdate, OneToMany } from 'typeorm';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import {
   ObjectType,
@@ -8,7 +8,8 @@ import {
 } from '@nestjs/graphql';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
-import { IsEmail, IsEnum } from 'class-validator';
+import { IsEmail, IsEnum, IsString, IsBoolean } from 'class-validator';
+import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 
 enum UserRole {
   Owner,
@@ -17,7 +18,7 @@ enum UserRole {
 }
 registerEnumType(UserRole, { name: 'UserRole' }); // graphql에 enum 등록해줘야함.
 
-@InputType({ isAbstract: true }) // 이거 대신 OmitTYpe 쓸 때 InputType 써줘도 되지~
+@InputType('UserInputType', { isAbstract: true }) // 이거 대신 OmitTYpe 쓸 때 InputType 써줘도 되지~
 @ObjectType()
 @Entity()
 export class User extends CoreEntity {
@@ -31,6 +32,7 @@ export class User extends CoreEntity {
   // BeforeUpdate할 때 password가 없기 때문에 if (this.password) 조건에 맞지도 않음. 굳.
   @Column({ select: false })
   @Field((type) => String)
+  @IsString()
   password: string;
 
   @Column({ type: 'enum', enum: UserRole })
@@ -40,7 +42,12 @@ export class User extends CoreEntity {
 
   @Column({ default: false })
   @Field((type) => Boolean)
+  @IsBoolean()
   verified: boolean; // email이 인증됐는지 안됐는지
+
+  @Field((type) => [Restaurant])
+  @OneToMany((type) => Restaurant, (restaurant) => restaurant.owner)
+  restaurants: Restaurant[];
 
   @BeforeInsert()
   @BeforeUpdate() // update할 때도~! // 우리가 직접 entity update하는게 아니다. 그냥 db에 쿼리만 보내는 것이다. 그래서 BeforeUpdate는 특정 entity를 업데이트해야 한다. .update는 그냥 그 entity가 있길 바라면서 쿼리만 보내는거야. => save해야해

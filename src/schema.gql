@@ -2,6 +2,20 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Category {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  coverImg: String!
+  restaurants: [Restaurant!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type User {
   id: Float!
   createdAt: DateTime!
@@ -10,17 +24,24 @@ type User {
   password: String!
   role: UserRole!
   verified: Boolean!
+  restaurants: [Restaurant!]!
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 enum UserRole {
   Owner
   Client
   Delivery
+}
+
+type Restaurant {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  coverImg: String!
+  address: String!
+  category: Category
+  owner: User!
 }
 
 type CreatedAccountOutput {
@@ -53,6 +74,7 @@ type VerifyEmailOutput {
 type Query {
   hi: Boolean!
   userProfile(userId: Float!): UserProfileOutput!
+  restaurants: [Restaurant!]!
 }
 
 type Mutation {
@@ -60,6 +82,8 @@ type Mutation {
   login(input: LoginInput!): LoginOutput!
   editProfile(input: EditProfileInput!): EditProfileOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
+  createRestaurant(input: CreateRestaurantDto!): Boolean!
+  updateRestaurant(id: Float!, data: UpdateRestaurantInputType!): Boolean!
 }
 
 input CreateAccountInput {
@@ -80,4 +104,46 @@ input EditProfileInput {
 
 input VerifyEmailInput {
   code: String!
+}
+
+input CreateRestaurantDto {
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  coverImg: String!
+  address: String = "강남"
+  category: CategoryInputType
+  owner: UserInputType!
+}
+
+input CategoryInputType {
+  name: String!
+  coverImg: String!
+  restaurants: [RestaurantInputType!]!
+}
+
+input RestaurantInputType {
+  name: String!
+  coverImg: String!
+  address: String = "강남"
+  category: CategoryInputType
+  owner: UserInputType!
+}
+
+input UserInputType {
+  email: String!
+  password: String!
+  role: UserRole!
+  verified: Boolean!
+  restaurants: [RestaurantInputType!]!
+}
+
+input UpdateRestaurantInputType {
+  createdAt: DateTime
+  updatedAt: DateTime
+  name: String
+  coverImg: String
+  address: String = "강남"
+  category: CategoryInputType
+  owner: UserInputType
 }

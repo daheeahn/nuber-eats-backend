@@ -23,6 +23,7 @@ import { pathToArray } from 'graphql/jsutils/Path';
 import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
+import { Category } from './restaurants/entities/category.entity';
 
 // console.log(Joi); // 그냥 import Joi하면 undefined가 찍힘
 
@@ -57,7 +58,7 @@ import { MailModule } from './mail/mail.module';
       // TypeORM이 Entity를 찾고 알아서 migration 해주는 것이다. DB의 구성을 자동으로 바꿔준다.
       synchronize: process.env.NODE_ENV !== 'prod', // prod은 따로 하고 싶을 수 있으니까
       logging: process.env.NODE_ENV !== 'prod', // 데이터베이스에서 무슨 일이 일어나는지 콘솔에 표시
-      entities: [User, Verification], // 이걸 해줘야 postico에서 보임. db에 반영됨.
+      entities: [User, Verification, Restaurant, Category], // 이걸 해줘야 postico에서 보임. db에 반영됨.
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -72,6 +73,7 @@ import { MailModule } from './mail/mail.module';
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
     UsersModule,
+    RestaurantsModule,
     // CommonModule,
     // AuthModule,
   ],
