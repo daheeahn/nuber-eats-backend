@@ -12,15 +12,11 @@ import { AuthUser } from 'src/auth/auth-user.decorator';
 import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { EditProfileOutput, EditProfileInput } from './dtos/edit-profile.dto';
 import { VerifyEmailOutput, VerifyEmailInput } from './dtos/verify-email.dto';
+import { Role } from 'src/auth/role.decorator';
 
 @Resolver((of) => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
-
-  @Query((returns) => Boolean)
-  hi(): boolean {
-    return true;
-  }
 
   @Mutation((returns) => CreatedAccountOutput)
   async createAccount(
@@ -48,13 +44,14 @@ export class UsersResolver {
     }
   }
 
-  // @Query((returns) => User)
-  // @UseGuards(AuthGuard) // 이렇게 추가해주는 것보다 더 좋은 방법 있다. (추후에 다시~!)
-  // // me(@Context() context) { // 이렇게 해줘도 되는데, 바로 user 받도록 decorator를 만들어보자.
-  // me(@AuthUser() authUser) {}
+  @Query((returns) => User)
+  @Role(['Any'])
+  me(@AuthUser() authUser) {
+    return authUser;
+  }
 
   @Query((returns) => UserProfileOutput)
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   async userProfile(
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
@@ -76,7 +73,7 @@ export class UsersResolver {
   }
 
   @Mutation((returns) => EditProfileOutput)
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   async editProfile(
     @AuthUser() authUser: User,
     @Args('input') editProfileInput: EditProfileInput,
@@ -85,6 +82,7 @@ export class UsersResolver {
   }
 
   @Mutation((returns) => VerifyEmailOutput)
+  @Role(['Any'])
   async verifyEmail(
     @Args('input') { code }: VerifyEmailInput,
   ): Promise<VerifyEmailOutput> {
