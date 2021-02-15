@@ -18,10 +18,10 @@ export class Restaurant extends CoreEntity {
   @Length(5) // for dto
   name: string;
 
-  @Field((type) => String)
-  @Column()
+  @Field((type) => String, { nullable: true })
+  @Column({ nullable: true })
   @IsString()
-  coverImg: string;
+  coverImg?: string;
 
   @Field((type) => String, { defaultValue: '강남' })
   @Column() // 여기에 default: 안써도 되긴 하네~ 위처럼 Column에만 default: true를 해줘도 되고(graphql에는 nullable), 여기처럼 graphql에만 해줘도 되고 상관없나보다

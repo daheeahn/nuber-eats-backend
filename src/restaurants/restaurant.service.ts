@@ -7,6 +7,7 @@ import {
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
 import { User } from 'src/users/entities/users.entity';
+import { Category } from './entities/category.entity';
 
 @Injectable()
 export class RestaurantService {
@@ -14,7 +15,11 @@ export class RestaurantService {
   constructor(
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
-  ) {}
+    @InjectRepository(Category)
+    private readonly categories: Repository<Category>,
+  ) {
+    // console.log('hello how are'.replace(/ /g, '-')); // 그냥 ' ', '-'하면 맨 처음 빈칸만 적용된다.
+  }
 
   async createRestaurant(
     owner: User,
@@ -25,6 +30,19 @@ export class RestaurantService {
     // save return Promise<Entity> (db 반영 O)
     try {
       const newRestaurant = this.restaurants.create(createRestaurantInput); // js에서만 존재하고 실제 db에 저장되진 않는다.
+      newRestaurant.owner = owner;
+      const categoryName = createRestaurantInput.categoryName
+        .trim()
+        .toLowerCase(); // korean bbq, korean-bbq, Korean-BBQ
+      const categorySlug = categoryName.replace(/ /g, '-');
+      let category = await this.categories.findOne({ slug: categorySlug });
+      if (!category) {
+        category = await this.categories.save(
+          this.categories.create({ slug: categorySlug, name: categoryName }),
+        );
+      }
+      newRestaurant.category = category;
+
       await this.restaurants.save(newRestaurant);
       return {
         ok: true,

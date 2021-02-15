@@ -1,4 +1,4 @@
-import { InputType, OmitType, ObjectType } from '@nestjs/graphql';
+import { InputType, ObjectType, PickType, Field } from '@nestjs/graphql';
 import { Restaurant } from '../entities/restaurant.entity';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 
@@ -6,11 +6,14 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 // ArgsType is 분리된 값들을 args로 넘길 수 있게 해줌. => object로 안보내도 됨
 // @ArgsType()
 @InputType() // dto, schema, db 통합 위해 maaped type 쓰면 ArgsType 안되기 때문에
-export class CreateRestaurantInput extends OmitType(
+export class CreateRestaurantInput extends PickType(
   Restaurant,
-  ['id', 'category', 'owner'],
+  ['name', 'coverImg', 'address'],
   InputType, // Restaurant는 ObjectType인데, OmitType을 쓸 때 필요한 InputType일 필요가 있기 때문에.
-) {}
+) {
+  @Field((type) => String)
+  categoryName: string;
+}
 
 @ObjectType()
 export class CreateRestaurantOutput extends CoreOutput {}

@@ -20,8 +20,8 @@ export class RestaurantResolver {
     // @Args() createRestaurantInput: CreateRestaurantInput, // ArgsType 사용 시 (이러면 자동으로 각자 분리된다.)
   ): Promise<CreateRestaurantOutput> {
     return this.restaurantService.createRestaurant(
-      createRestaurantInput,
       authUser,
+      createRestaurantInput,
     );
   }
 }

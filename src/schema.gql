@@ -7,7 +7,8 @@ type Category {
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
-  coverImg: String!
+  coverImg: String
+  slug: String!
   restaurants: [Restaurant!]!
 }
 
@@ -38,7 +39,7 @@ type Restaurant {
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
-  coverImg: String!
+  coverImg: String
   address: String!
   category: Category
   owner: User!
@@ -110,32 +111,8 @@ input VerifyEmailInput {
 }
 
 input CreateRestaurantInput {
-  createdAt: DateTime!
-  updatedAt: DateTime!
   name: String!
-  coverImg: String!
+  coverImg: String
   address: String = "강남"
-  owner: UserInputType!
-}
-
-input UserInputType {
-  email: String!
-  password: String!
-  role: UserRole!
-  verified: Boolean!
-  restaurants: [RestaurantInputType!]!
-}
-
-input RestaurantInputType {
-  name: String!
-  coverImg: String!
-  address: String = "강남"
-  category: CategoryInputType
-  owner: UserInputType!
-}
-
-input CategoryInputType {
-  name: String!
-  coverImg: String!
-  restaurants: [RestaurantInputType!]!
+  categoryName: String!
 }

@@ -12,15 +12,20 @@ import { Restaurant } from './restaurant.entity';
 @Entity() // for db (typeorm)
 export class Category extends CoreEntity {
   @Field((type) => String) // for graphql
-  @Column() // for db
+  @Column({ unique: true }) // for db
   @IsString() // for dto
   @Length(5) // for dto
   name: string;
 
-  @Field((type) => String)
-  @Column()
+  @Field((type) => String, { nullable: true })
+  @Column({ nullable: true })
   @IsString()
-  coverImg: string;
+  coverImg?: string;
+
+  @Field((type) => String)
+  @Column({ unique: true })
+  @IsString()
+  slug: string;
 
   @Field((type) => [Restaurant])
   @OneToMany((type) => Restaurant, (restaurant) => restaurant.category)
