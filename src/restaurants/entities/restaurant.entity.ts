@@ -5,11 +5,13 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   RelationId,
+  OneToMany,
 } from 'typeorm';
 import { IsString, IsBoolean, Length, IsOptional } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Category } from './category.entity';
 import { User } from 'src/users/entities/users.entity';
+import { Dish } from './dish.entity';
 
 // entity에서 InputType 안써주고 이렇게 할 수도 있는데 추천은 X
 
@@ -49,4 +51,8 @@ export class Restaurant extends CoreEntity {
   // graphql에서는 알고싶지 않아서 @Field 안씀.
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
+
+  @Field((type) => [Dish], { nullable: true })
+  @OneToMany((type) => Dish, (dish) => dish.restaurant)
+  menu: Dish[];
 }
