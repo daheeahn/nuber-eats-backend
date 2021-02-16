@@ -26,6 +26,7 @@ import {
 } from './dtos/delete-restaurant.dto';
 import { Category } from './entities/category.entity';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
+import { CategoryOutput, CategoryInput } from './dtos/category.dto';
 // import { Query } from '@nestjs/common'; // 이거 아님!!!!!!!!!!!!1
 
 @Resolver((of) => Restaurant) // 꼭 이렇게 안해도 됨. 그냥 이름 붙여주는거. 직관성 높아짐.
@@ -80,5 +81,12 @@ export class CategoryResolver {
   @Query((returns) => AllCategoriesOutput)
   allCategories(): Promise<AllCategoriesOutput> {
     return this.restaurantService.allCategories();
+  }
+
+  @Query((returns) => CategoryOutput)
+  findCategoryBySlug(
+    @Args() categoryInput: CategoryInput,
+  ): Promise<CategoryOutput> {
+    return this.restaurantService.findCategoryBySlug(categoryInput);
   }
 }
