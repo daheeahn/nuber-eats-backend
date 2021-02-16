@@ -28,6 +28,11 @@ import { Category } from './entities/category.entity';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryOutput, CategoryInput } from './dtos/category.dto';
 import { RestaurantsOutput, RestaurantsInput } from './dtos/restaurants.dto';
+import { RestaurantOutput, RestaurantInput } from './dtos/restaurant.dto';
+import {
+  SearchRestaurantOutput,
+  SearchRestaurantInput,
+} from './dtos/search-restaurant.dto';
 // import { Query } from '@nestjs/common'; // 이거 아님!!!!!!!!!!!!1
 
 @Resolver((of) => Restaurant) // 꼭 이렇게 안해도 됨. 그냥 이름 붙여주는거. 직관성 높아짐.
@@ -74,6 +79,20 @@ export class RestaurantResolver {
     @Args('input') restaurantsInput: RestaurantsInput,
   ): Promise<RestaurantsOutput> {
     return this.restaurantService.allRestaurants(restaurantsInput);
+  }
+
+  @Query((returns) => RestaurantOutput)
+  restaurant(
+    @Args('input') restaurantInput: RestaurantInput,
+  ): Promise<RestaurantOutput> {
+    return this.restaurantService.findRestaurantById(restaurantInput);
+  }
+
+  @Query((returns) => SearchRestaurantOutput)
+  searchRestaurant(
+    @Args('input') searchRestaurantInput: SearchRestaurantInput,
+  ): Promise<SearchRestaurantOutput> {
+    return this.restaurantService.searchRestaurantByName(searchRestaurantInput);
   }
 }
 
