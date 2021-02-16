@@ -71,7 +71,16 @@ type CategoryOutput {
   error: String
   ok: Boolean!
   totalPages: Int
+  totalResults: Int
   category: Category
+}
+
+type RestaurantsOutput {
+  error: String
+  ok: Boolean!
+  totalPages: Int
+  totalResults: Int
+  results: [Restaurant!]
 }
 
 type CreatedAccountOutput {
@@ -104,8 +113,13 @@ type VerifyEmailOutput {
 type Query {
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
+  restaurants(input: RestaurantsInput!): RestaurantsOutput!
   allCategories: AllCategoriesOutput!
   findCategoryBySlug(input: CategoryInput!): CategoryOutput!
+}
+
+input RestaurantsInput {
+  page: Int = 1
 }
 
 input CategoryInput {
