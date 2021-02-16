@@ -14,6 +14,10 @@ import {
   EditRestaurantOutput,
   EditRestaurantInput,
 } from './dtos/edit-restaurant.dto';
+import {
+  DeleteRestaurantInput,
+  DeleteRestaurantOutput,
+} from './dtos/delete-restaurant.dto';
 // import { Query } from '@nestjs/common'; // 이거 아님!!!!!!!!!!!!1
 
 @Resolver((of) => Restaurant) // 꼭 이렇게 안해도 됨. 그냥 이름 붙여주는거. 직관성 높아짐.
@@ -41,5 +45,17 @@ export class RestaurantResolver {
     @Args('input') editRestaurantInput: EditRestaurantInput,
   ): Promise<EditRestaurantOutput> {
     return this.restaurantService.editRestaurant(owner, editRestaurantInput);
+  }
+
+  @Mutation((returns) => DeleteRestaurantOutput)
+  @Role(['Owner'])
+  deleteRestaurant(
+    @AuthUser() owner: User,
+    @Args('input') deleteRestaurantInput: DeleteRestaurantInput,
+  ): Promise<DeleteRestaurantOutput> {
+    return this.restaurantService.deleteRestaurant(
+      owner,
+      deleteRestaurantInput,
+    );
   }
 }
