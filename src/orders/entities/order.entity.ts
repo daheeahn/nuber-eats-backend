@@ -48,9 +48,9 @@ export class Order extends CoreEntity {
   @JoinTable() // order로부터 몇 개의 dish를 주문했는지 알아야해. 음식을 여러 개 주문할 수 있으니까.
   dishes: Dish[];
 
-  @Field((type) => Float)
-  @Column()
-  total: number;
+  @Field((type) => Float, { nullable: true })
+  @Column({ nullable: true })
+  total?: number;
 
   @Field((type) => OrderStatus)
   @Column({ type: 'enum', enum: OrderStatus })
