@@ -10,6 +10,8 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/users/entities/users.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { Dish } from 'src/restaurants/entities/dish.entity';
+import { OrderItem } from 'src/restaurants/entities/order-item.entity';
+import { IsNumber, IsEnum } from 'class-validator';
 
 export enum OrderStatus {
   Pending = 'Pending',
@@ -43,16 +45,20 @@ export class Order extends CoreEntity {
   @ManyToOne((type) => Restaurant, (restaurant) => restaurant.orders)
   restaurant: Restaurant;
 
-  @Field((type) => [Dish])
-  @ManyToMany((type) => Dish)
-  @JoinTable() // order로부터 몇 개의 dish를 주문했는지 알아야해. 음식을 여러 개 주문할 수 있으니까.
-  dishes: Dish[];
+  @Field((type) => [OrderItem])
+  @ManyToMany((type) => OrderItem)
+  @JoinTable()
+  // order로부터 몇 개의 dish를 주문했는지 알아야해. 음식을 여러 개 주문할 수 있으니까.
+  // 그런데 그게 Dish일 필요는 없다. OrderItem이면 된다.
+  items: OrderItem[];
 
   @Field((type) => Float, { nullable: true })
   @Column({ nullable: true })
+  @IsNumber()
   total?: number;
 
   @Field((type) => OrderStatus)
   @Column({ type: 'enum', enum: OrderStatus })
+  @IsEnum(OrderStatus)
   status: OrderStatus;
 }

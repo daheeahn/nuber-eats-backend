@@ -16,7 +16,7 @@ class DishChoice {
 
 @InputType('DishOptionInputType', { isAbstract: true }) // 이걸 왜 해야하는지 아직 모르겠음.
 @ObjectType()
-class DishOption {
+export class DishOption {
   @Field((type) => String)
   name: string;
 
