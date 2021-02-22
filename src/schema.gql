@@ -38,7 +38,7 @@ enum UserRole {
 type DishOption {
   name: String!
   choices: [String!]
-  extra: Int!
+  extra: Int
 }
 
 type Dish {
@@ -237,5 +237,5 @@ input CreateDishInput {
 input DishOptionInputType {
   name: String!
   choices: [String!]
-  extra: Int!
+  extra: Int
 }

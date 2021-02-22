@@ -26,6 +26,7 @@ import {
   SearchRestaurantOutput,
 } from './dtos/search-restaurant.dto';
 import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
+import { Dish } from './entities/dish.entity';
 
 @Injectable()
 export class RestaurantService {
@@ -35,6 +36,8 @@ export class RestaurantService {
     private readonly restaurants: Repository<Restaurant>,
     // @InjectRepository(Category) // 이제 custom repository라 필요없음.
     private readonly categories: CategoryRepository, // custom repository
+    @InjectRepository(Dish)
+    private readonly dishes: Repository<Dish>,
   ) {
     // console.log('hello how are'.replace(/ /g, '-')); // 그냥 ' ', '-'하면 맨 처음 빈칸만 적용된다.
   }
@@ -289,13 +292,32 @@ export class RestaurantService {
     createDishInput: CreateDishInput,
   ): Promise<CreateDishOutput> {
     try {
+      const restaurant = await this.restaurants.findOne(
+        createDishInput.restaurantId,
+      );
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: 'You cannot do that',
+        };
+      }
+      await this.dishes.save(
+        this.dishes.create({ ...createDishInput, restaurant }),
+      );
       return {
         ok: true,
       };
     } catch (error) {
+      console.log('error', error);
       return {
         ok: false,
-        error: '',
+        error: 'Could not create dish.',
       };
     }
   }
