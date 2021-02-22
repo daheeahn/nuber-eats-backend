@@ -4,14 +4,24 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { IsString, Length, IsNumber } from 'class-validator';
 import { Restaurant } from './restaurant.entity';
 
+@InputType('DishChoiceInputType', { isAbstract: true }) // 이걸 왜 해야하는지 아직 모르겠음.
+@ObjectType()
+class DishChoice {
+  @Field((type) => String)
+  name: string;
+
+  @Field((type) => Int, { nullable: true })
+  extra?: number;
+}
+
 @InputType('DishOptionInputType', { isAbstract: true }) // 이걸 왜 해야하는지 아직 모르겠음.
 @ObjectType()
 class DishOption {
   @Field((type) => String)
   name: string;
 
-  @Field((type) => [String], { nullable: true })
-  choices?: string[];
+  @Field((type) => [DishChoice], { nullable: true })
+  choices?: DishChoice[]; // choices가 주문의 값을 변경할 수도 있기 때문.
 
   @Field((type) => Int, { nullable: true })
   extra?: number;

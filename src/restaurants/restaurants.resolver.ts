@@ -35,6 +35,8 @@ import {
 } from './dtos/search-restaurant.dto';
 import { Dish } from './entities/dish.entity';
 import { CreateDishOutput, CreateDishInput } from './dtos/create-dish.dto';
+import { EditDishOutput, EditDishInput } from './dtos/edit-dish.dto';
+import { DeleteDishOutput, DeleteDishInput } from './dtos/delete-dish.dto';
 // import { Query } from '@nestjs/common'; // 이거 아님!!!!!!!!!!!!1
 
 @Resolver((of) => Restaurant) // 꼭 이렇게 안해도 됨. 그냥 이름 붙여주는거. 직관성 높아짐.
@@ -131,5 +133,23 @@ export class DishResolver {
     @Args('input') createDishInput: CreateDishInput,
   ): Promise<CreateDishOutput> {
     return this.restaurantService.createDish(owner, createDishInput);
+  }
+
+  @Mutation((type) => EditDishOutput)
+  @Role(['Owner'])
+  editDish(
+    @AuthUser() owner: User,
+    @Args('input') editDishInput: EditDishInput,
+  ): Promise<EditDishOutput> {
+    return this.restaurantService.editDish(owner, editDishInput);
+  }
+
+  @Mutation((type) => DeleteDishOutput)
+  @Role(['Owner'])
+  deleteDish(
+    @AuthUser() owner: User,
+    @Args('input') deleteDishInput: DeleteDishInput,
+  ): Promise<DeleteDishOutput> {
+    return this.restaurantService.deleteDish(owner, deleteDishInput);
   }
 }
