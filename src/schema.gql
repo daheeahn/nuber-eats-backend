@@ -18,23 +18,6 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type User {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  email: String!
-  password: String!
-  role: UserRole!
-  verified: Boolean!
-  restaurants: [Restaurant!]!
-}
-
-enum UserRole {
-  Owner
-  Client
-  Delivery
-}
-
 type DishChoice {
   name: String!
   extra: Int
@@ -58,6 +41,44 @@ type Dish {
   options: [DishOption!]
 }
 
+type Order {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  customer: User
+  driver: User
+  restaurant: Restaurant!
+  dishes: [Dish!]!
+  total: Float!
+  status: OrderStatus!
+}
+
+enum OrderStatus {
+  Pending
+  Cooking
+  PickedUp
+  Delivered
+}
+
+type User {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  email: String!
+  password: String!
+  role: UserRole!
+  verified: Boolean!
+  restaurants: [Restaurant!]!
+  orders: [Order!]!
+  rides: [Order!]!
+}
+
+enum UserRole {
+  Owner
+  Client
+  Delivery
+}
+
 type Restaurant {
   id: Float!
   createdAt: DateTime!
@@ -67,6 +88,7 @@ type Restaurant {
   address: String!
   category: Category
   owner: User!
+  orders: [Order!]!
   menu: [Dish!]
 }
 

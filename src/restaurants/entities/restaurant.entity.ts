@@ -12,6 +12,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Category } from './category.entity';
 import { User } from 'src/users/entities/users.entity';
 import { Dish } from './dish.entity';
+import { Order } from 'src/orders/entities/order.entity';
 
 // entity에서 InputType 안써주고 이렇게 할 수도 있는데 추천은 X
 
@@ -47,6 +48,10 @@ export class Restaurant extends CoreEntity {
     onDelete: 'CASCADE',
   })
   owner: User;
+
+  @Field((type) => [Order])
+  @OneToMany((type) => Order, (order) => order.restaurant)
+  orders: Order[];
 
   // graphql에서는 알고싶지 않아서 @Field 안씀.
   @RelationId((restaurant: Restaurant) => restaurant.owner)
