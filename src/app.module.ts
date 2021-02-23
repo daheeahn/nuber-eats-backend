@@ -73,8 +73,12 @@ import { OrderItem } from './restaurants/entities/order-item.entity';
       ], // 이걸 해줘야 postico에서 보임. db에 반영됨.
     }),
     GraphQLModule.forRoot({
+      installSubscriptionHandlers: true, // 서버가 웹소켓 기능을 가지게 된다.
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      context: ({ req }) => ({ user: req['user'] }),
+      context: ({ req }) => {
+        console.log('req', req);
+        return { user: req['user'] };
+      },
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY, // JwtService에서 그냥 this.config 해도 되긴함. 이런 방법도 있다~

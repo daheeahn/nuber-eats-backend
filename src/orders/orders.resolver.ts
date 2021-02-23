@@ -1,4 +1,5 @@
-import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
+import { PubSub } from 'graphql-subscriptions';
+import { Resolver, Mutation, Args, Query, Subscription } from '@nestjs/graphql';
 import { Order } from './entities/order.entity';
 import { OrdersService } from './orders.service';
 import { CreateOrderOutput, CreateOrderInput } from './dtos/create-order.dto';
@@ -8,6 +9,8 @@ import { Role } from 'src/auth/role.decorator';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { GetOrderOutput, GetOrderInput } from './dtos/get-order.dto';
 import { EditOrderOutput, EditOrderInput } from './dtos/edit-order.dto';
+
+const pubsub = new PubSub();
 
 @Resolver((of) => Order)
 export class OrderResolver {
@@ -47,5 +50,12 @@ export class OrderResolver {
     @Args('input') editOrderInput: EditOrderInput,
   ): Promise<EditOrderOutput> {
     return this.ordersService.editOrder(user, editOrderInput);
+  }
+
+  @Subscription((returns) => String)
+  // orderSubscription() {
+  hotPotatos() {
+    // GraphQL상으로는 string을 return하지만, 실제로는 asyncIterator을 return할거야. 이게 규칙이다!
+    return pubsub.asyncIterator('hotPotatos');
   }
 }
