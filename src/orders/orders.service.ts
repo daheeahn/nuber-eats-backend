@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Order } from './entities/order.entity';
+import { Order, OrderStatus } from './entities/order.entity';
 import { Repository } from 'typeorm';
 import { User, UserRole } from 'src/users/entities/users.entity';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
@@ -9,6 +9,7 @@ import { OrderItem } from 'src/restaurants/entities/order-item.entity';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
+import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -162,6 +163,14 @@ export class OrdersService {
     }
   }
 
+  canSeeOrder(user: User, order: Order): boolean {
+    return (
+      (user.role === UserRole.Client && order.customerId !== user.id) || // Client
+      (user.role === UserRole.Delivery && order.driverId !== user.id) || // Driver
+      (user.role === UserRole.Owner && order.restaurant.ownerId !== user.id) // Owner
+    );
+  }
+
   async getOrder(
     user: User,
     { id: orderId }: GetOrderInput,
@@ -176,11 +185,7 @@ export class OrdersService {
           error: 'Order not found',
         };
       }
-      if (
-        (user.role === UserRole.Client && order.customerId !== user.id) || // Client
-        (user.role === UserRole.Delivery && order.driverId !== user.id) || // Driver
-        (user.role === UserRole.Owner && order.restaurant.ownerId !== user.id) // Owner
-      ) {
+      if (!this.canSeeOrder(user, order)) {
         return {
           ok: false,
           error: 'You cannot see that',
@@ -195,6 +200,68 @@ export class OrdersService {
       return {
         ok: false,
         error: 'Could not load order',
+      };
+    }
+  }
+
+  async editOrder(
+    user: User,
+    { id: orderId, status }: EditOrderInput,
+  ): Promise<EditOrderOutput> {
+    try {
+      const order = await this.orders.findOne(orderId, {
+        relations: ['restaurant'],
+      });
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found',
+        };
+      }
+      if (this.canSeeOrder(user, order)) {
+        return {
+          ok: false,
+          error: 'You cannot edit that',
+        };
+      }
+      let canEdit = true;
+      if (user.role === UserRole.Client) {
+        canEdit = false;
+      }
+      if (user.role === UserRole.Owner) {
+        if (status !== OrderStatus.Cooking && status !== OrderStatus.Cooked) {
+          canEdit = false;
+        }
+      }
+      if (user.role === UserRole.Delivery) {
+        if (
+          status === OrderStatus.PickedUp ||
+          status === OrderStatus.Delivered
+        ) {
+          canEdit = false;
+        }
+      }
+      if (!canEdit) {
+        // @Role에서 막아도되고 여러 방법이 있지만 이번엔 이렇게 해볼게~
+        return {
+          ok: false,
+          error: 'You cannot edit that',
+        };
+      }
+      await this.orders.save([
+        {
+          id: orderId,
+          status,
+        },
+      ]);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      console.log('edit order error', error);
+      return {
+        ok: false,
+        error: 'Could not edit order',
       };
     }
   }

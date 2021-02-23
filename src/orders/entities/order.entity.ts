@@ -16,13 +16,13 @@ import {
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/users/entities/users.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
-import { Dish } from 'src/restaurants/entities/dish.entity';
 import { OrderItem } from 'src/restaurants/entities/order-item.entity';
 import { IsNumber, IsEnum } from 'class-validator';
 
 export enum OrderStatus {
-  Pending = 'Pending',
+  Pending = 'Pending', // defaut
   Cooking = 'Cooking',
+  Cooked = 'Cooked',
   PickedUp = 'PickedUp',
   Delivered = 'Delivered',
 }
