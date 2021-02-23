@@ -72,6 +72,9 @@ export class OrderResolver {
       // console.log('context', context);
       return readyPotato === potatoId;
     },
+    // 사용자가 받는 update 알림의 형태를 바꿔준다. output을 바꿔준다.
+    resolve: ({ readyPotato }) =>
+      `Your potato with the id ${readyPotato} is ready!`, // 원래 이걸 publish('hotPotatos', here) 에서 here자리에 넣었었잖아!
   })
   @Role(['Any'])
   readyPotato(@AuthUser() user: User, @Args('potatoId') potatoId: number) {
