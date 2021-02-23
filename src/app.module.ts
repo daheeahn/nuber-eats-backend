@@ -76,12 +76,10 @@ import { OrderItem } from './restaurants/entities/order-item.entity';
       installSubscriptionHandlers: true, // 서버가 웹소켓 기능을 가지게 된다.
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: ({ req, connection }) => {
-        if (req) {
-          // console.log('req', req);
-          return { user: req['user'] };
-        } else {
-          console.log('connection', connection);
-        }
+        const TOKEN_KEY = 'x-jwt';
+        return {
+          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
+        };
       },
     }),
     JwtModule.forRoot({
@@ -101,19 +99,21 @@ import { OrderItem } from './restaurants/entities/order-item.entity';
   controllers: [],
   providers: [],
 })
-// export class AppModule {}
-export class AppModule implements NestModule {
-  // *** 특정 옵션 넣고 싶을 떄
-  configure(consumer: MiddlewareConsumer) {
-    // jwtMiddleware처럼 그냥 function으로 써도 되고, JwtMiddleware class로 써도되고~
-    // 우리는 users repository 써야하니까 class로 쓰자!
-    consumer.apply(JwtMiddleware).forRoutes({
-      // path에 해당하고, post만 JwtMiddleware가 먹히도록 설정.
-      path: '/graphql',
-      // path: '*',
-      // method: RequestMethod.POST,
-      method: RequestMethod.ALL,
-    });
-    // *팁) .exclude 함수만 바꿔주면 모든 그 안 옵션에 있는 pathToArray, method는 제외시켜준다.
-  }
-}
+// export class AppModule implements NestModule {
+//   // *** 특정 옵션 넣고 싶을 떄
+//   configure(consumer: MiddlewareConsumer) {
+//     // jwtMiddleware처럼 그냥 function으로 써도 되고, JwtMiddleware class로 써도되고~
+//     // 우리는 users repository 써야하니까 class로 쓰자!
+//     consumer.apply(JwtMiddleware).forRoutes({
+//       // path에 해당하고, post만 JwtMiddleware가 먹히도록 설정.
+//       path: '/graphql',
+//       // path: '*',
+//       // method: RequestMethod.POST,
+//       method: RequestMethod.ALL,
+//     });
+//     // *팁) .exclude 함수만 바꿔주면 모든 그 안 옵션에 있는 pathToArray, method는 제외시켜준다.
+//   }
+// }
+
+// 이제 HTTP와 웹소켓 모두에서 인증할 수 있는 방법을 찾아야해.
+export class AppModule {}

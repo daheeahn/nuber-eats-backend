@@ -25,8 +25,8 @@ export class AuthGuard implements CanActivate {
     // console.log(context);
     // context가 http로 되어있는데, graphql로 바꿔야함.
     const gqlContext = GqlExecutionContext.create(context).getContext();
-    // console.log('gqlContext');
-    // console.log(gqlContext);
+    console.log('💝 gqlContext');
+    console.log(gqlContext.token);
     const user: User = gqlContext['user'];
     if (!user) {
       return false;

@@ -60,8 +60,10 @@ export class OrderResolver {
   }
 
   @Subscription((returns) => String)
-  // orderSubscription() {
-  readyPotato() {
+  @Role(['Any'])
+  readyPotato(@AuthUser() user: User) {
+    console.log('😍 user');
+    console.log(user);
     // GraphQL상으로는 string을 return하지만, 실제로는 asyncIterator을 return할거야. 이게 규칙이다!
     return pubsub.asyncIterator('hotPotatos');
   }
