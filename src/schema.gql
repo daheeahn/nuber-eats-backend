@@ -198,6 +198,12 @@ type CreateOrderOutput {
   ok: Boolean!
 }
 
+type GetOrdersOutput {
+  error: String
+  ok: Boolean!
+  orders: [Order!]
+}
+
 type Query {
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
@@ -206,6 +212,7 @@ type Query {
   searchRestaurant(input: SearchRestaurantInput!): SearchRestaurantOutput!
   allCategories: AllCategoriesOutput!
   findCategoryBySlug(input: CategoryInput!): CategoryOutput!
+  getOrders(input: GetOrdersInput!): GetOrdersOutput!
 }
 
 input RestaurantsInput {
@@ -224,6 +231,10 @@ input SearchRestaurantInput {
 input CategoryInput {
   page: Int = 1
   slug: String!
+}
+
+input GetOrdersInput {
+  status: OrderStatus
 }
 
 type Mutation {

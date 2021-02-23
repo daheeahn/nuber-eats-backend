@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { Repository } from 'typeorm';
-import { User } from 'src/users/entities/users.entity';
+import { User, UserRole } from 'src/users/entities/users.entity';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { OrderItem } from 'src/restaurants/entities/order-item.entity';
 import { Dish } from 'src/restaurants/entities/dish.entity';
+import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 
 @Injectable()
 export class OrdersService {
@@ -102,6 +103,53 @@ export class OrdersService {
       return {
         ok: false,
         error: 'Could not create order',
+      };
+    }
+  }
+
+  async getOrders(
+    user: User,
+    { status }: GetOrdersInput,
+  ): Promise<GetOrdersOutput> {
+    let orders: Order[];
+    try {
+      const { role } = user;
+      if (role === UserRole.Client) {
+        orders = await this.orders.find({
+          where: {
+            customer: user,
+            status,
+          },
+        });
+      } else if (role === UserRole.Delivery) {
+        orders = await this.orders.find({
+          where: {
+            driver: user,
+            status,
+          },
+        });
+      } else if (role === UserRole.Owner) {
+        const restaurants = await this.restaurants.find({
+          where: {
+            owner: user,
+          },
+          relations: ['orders'],
+        });
+        // 모든 레스토랑에 order가 있진 않을테니까 flat을 해준거.
+        // flat => Array를 하나 벗겨낸다.
+        orders = restaurants.map((r) => r.orders).flat(1);
+      }
+      console.log(orders.length, orders);
+
+      return {
+        ok: true,
+        orders,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        ok: false,
+        error: 'Could not get orders',
       };
     }
   }
