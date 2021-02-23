@@ -56,17 +56,27 @@ export class OrderResolver {
   }
 
   @Mutation((returns) => Boolean)
-  potatoReady() {
+  async potatoReady(@Args('potatoId') potatoId: number) {
     // payload에는 resolver 함수의 이름이 있어야 한다. 트리거 이름이 아니다.
-    this.pubSub.publish('hotPotatos', { readyPotato: 'Your potato is ready.' });
+    await this.pubSub.publish('hotPotatos', {
+      readyPotato: potatoId,
+    });
     return true;
   }
 
-  @Subscription((returns) => String)
+  @Subscription((returns) => String, {
+    // filter: (payload, variables, context) => {
+    filter: ({ readyPotato }, { potatoId }, context) => {
+      // console.log('payload', payload);
+      // console.log('variables', variables);
+      // console.log('context', context);
+      return readyPotato === potatoId;
+    },
+  })
   @Role(['Any'])
-  readyPotato(@AuthUser() user: User) {
-    console.log('😍 user');
-    console.log(user);
+  readyPotato(@AuthUser() user: User, @Args('potatoId') potatoId: number) {
+    // console.log('😍 user');
+    // console.log(user);
     // GraphQL상으로는 string을 return하지만, 실제로는 asyncIterator을 return할거야. 이게 규칙이다!
     return this.pubSub.asyncIterator('hotPotatos');
   }
