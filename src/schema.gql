@@ -322,6 +322,5 @@ input CreateOrderItemInput {
 
 input OrderItemOptionInputType {
   name: String!
-  choice: DishChoiceInputType
-  extra: Int
+  choice: String
 }
