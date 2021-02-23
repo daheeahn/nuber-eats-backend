@@ -75,9 +75,13 @@ import { OrderItem } from './restaurants/entities/order-item.entity';
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true, // 서버가 웹소켓 기능을 가지게 된다.
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      context: ({ req }) => {
-        console.log('req', req);
-        return { user: req['user'] };
+      context: ({ req, connection }) => {
+        if (req) {
+          // console.log('req', req);
+          return { user: req['user'] };
+        } else {
+          console.log('connection', connection);
+        }
       },
     }),
     JwtModule.forRoot({

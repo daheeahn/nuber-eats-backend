@@ -52,9 +52,16 @@ export class OrderResolver {
     return this.ordersService.editOrder(user, editOrderInput);
   }
 
+  @Mutation((returns) => Boolean)
+  potatoReady() {
+    // payload에는 resolver 함수의 이름이 있어야 한다. 트리거 이름이 아니다.
+    pubsub.publish('hotPotatos', { readyPotato: 'Your potato is ready.' });
+    return true;
+  }
+
   @Subscription((returns) => String)
   // orderSubscription() {
-  hotPotatos() {
+  readyPotato() {
     // GraphQL상으로는 string을 return하지만, 실제로는 asyncIterator을 return할거야. 이게 규칙이다!
     return pubsub.asyncIterator('hotPotatos');
   }
