@@ -5,7 +5,14 @@ import {
   registerEnumType,
   Float,
 } from '@nestjs/graphql';
-import { Entity, Column, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
+  RelationId,
+} from 'typeorm';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/users/entities/users.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
@@ -34,12 +41,18 @@ export class Order extends CoreEntity {
   })
   customer?: User;
 
+  @RelationId((order: Order) => order.customer)
+  customerId: number;
+
   @Field((type) => User, { nullable: true }) // 바로 배달원이 지정되지 않기 떄문
   @ManyToOne((type) => User, (user) => user.orders, {
     onDelete: 'SET NULL', // user가 지워진다고해서 order가 지워지는건 원하지 x
     nullable: true,
   })
   driver?: User;
+
+  @RelationId((order: Order) => order.driver)
+  driverId: number;
 
   @Field((type) => Restaurant, { nullable: true })
   @ManyToOne((type) => Restaurant, (restaurant) => restaurant.orders, {

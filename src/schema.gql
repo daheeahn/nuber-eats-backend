@@ -204,6 +204,12 @@ type GetOrdersOutput {
   orders: [Order!]
 }
 
+type GetOrderOutput {
+  error: String
+  ok: Boolean!
+  order: Order
+}
+
 type Query {
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
@@ -213,6 +219,7 @@ type Query {
   allCategories: AllCategoriesOutput!
   findCategoryBySlug(input: CategoryInput!): CategoryOutput!
   getOrders(input: GetOrdersInput!): GetOrdersOutput!
+  getOrder(input: GetOrderInput!): GetOrderOutput!
 }
 
 input RestaurantsInput {
@@ -235,6 +242,10 @@ input CategoryInput {
 
 input GetOrdersInput {
   status: OrderStatus
+}
+
+input GetOrderInput {
+  id: Float!
 }
 
 type Mutation {

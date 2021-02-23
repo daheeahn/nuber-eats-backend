@@ -8,6 +8,7 @@ import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { OrderItem } from 'src/restaurants/entities/order-item.entity';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
+import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -118,14 +119,18 @@ export class OrdersService {
         orders = await this.orders.find({
           where: {
             customer: user,
-            status,
+            ...(status && {
+              status,
+            }),
           },
         });
       } else if (role === UserRole.Delivery) {
         orders = await this.orders.find({
           where: {
             driver: user,
-            status,
+            ...(status && {
+              status,
+            }),
           },
         });
       } else if (role === UserRole.Owner) {
@@ -138,6 +143,9 @@ export class OrdersService {
         // 모든 레스토랑에 order가 있진 않을테니까 flat을 해준거.
         // flat => Array를 하나 벗겨낸다.
         orders = restaurants.map((r) => r.orders).flat(1);
+        if (status) {
+          orders = orders.filter((order) => order.status === status);
+        }
       }
       console.log(orders.length, orders);
 
@@ -150,6 +158,43 @@ export class OrdersService {
       return {
         ok: false,
         error: 'Could not get orders',
+      };
+    }
+  }
+
+  async getOrder(
+    user: User,
+    { id: orderId }: GetOrderInput,
+  ): Promise<GetOrderOutput> {
+    try {
+      const order = await this.orders.findOne(orderId, {
+        relations: ['restaurant'],
+      });
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found',
+        };
+      }
+      if (
+        (user.role === UserRole.Client && order.customerId !== user.id) || // Client
+        (user.role === UserRole.Delivery && order.driverId !== user.id) || // Driver
+        (user.role === UserRole.Owner && order.restaurant.ownerId !== user.id) // Owner
+      ) {
+        return {
+          ok: false,
+          error: 'You cannot see that',
+        };
+      }
+      return {
+        ok: true,
+        order,
+      };
+    } catch (error) {
+      console.log('get order error', error);
+      return {
+        ok: false,
+        error: 'Could not load order',
       };
     }
   }
